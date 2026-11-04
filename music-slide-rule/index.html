@@ -59,9 +59,9 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 .keyname.minor{font-size:clamp(15px,2vw,18px);color:var(--rule-dim)}
 .keyname.minor > *{margin-top:6px}
 .keyname.minor .kmin{color:var(--rule-fg);font-weight:500}
-.keyname .notes{display:inline-grid;grid-template-columns:repeat(7,2.4em);font:500 14px/1 var(--mono);color:var(--accent)}
-.keyname .notes span{text-align:left;white-space:nowrap}
-.keyname .notes sup{font-size:.7em;line-height:0;vertical-align:.45em;margin-left:.08em;opacity:.85}
+.keyname .notes{display:inline-block;font:500 14px/1 var(--mono);color:var(--accent);white-space:nowrap}
+.keyname .notes .n{display:inline-block;width:2.5em;text-align:left}
+.keyname .notes .n i{display:inline-block;width:1em;font-style:normal;font-size:.75em;vertical-align:.35em;opacity:.85}
 .keyname.minor .notes{color:var(--rule-dim)}
 .sigline{grid-column:1 / -1}
 .sigline{font:600 11px/1 var(--mono);color:var(--rule-dim);letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;margin-top:6px}

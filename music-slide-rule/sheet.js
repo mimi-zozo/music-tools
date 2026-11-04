@@ -149,7 +149,8 @@ function updateReadout() {
   document.getElementById('ctKey').textContent = `${k.name} major`;
   const minorNotes = [5, 6, 0, 1, 2, 3, 4].map((i) => k.notes[i]);   // natural minor: same notes from degree 6
   document.getElementById('majNotes').textContent = k.notes.join('  ');
-  const cells = (notes) => notes.map((n) => `<span>${n[0]}${n.length > 1 ? `<sup>${n.slice(1)}</sup>` : ''}</span>`).join('');
+  // every note is letter + accidental slot (blank for naturals), so all cells are the same width
+  const cells = (notes) => notes.map((n) => `<span class="n">${n[0]}<i>${n.length > 1 ? n.slice(1) : '&nbsp;'}</i></span>`).join('');
   document.getElementById('majNotesBar').innerHTML = cells(k.notes);
   document.getElementById('minNotesBar').innerHTML = cells(minorNotes);
   document.querySelectorAll('.sym').forEach((s) => (s.textContent = k.name + s.dataset.sym));
