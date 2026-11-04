@@ -59,7 +59,8 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 .keyname.minor{font-size:clamp(15px,2vw,18px);color:var(--rule-dim)}
 .keyname.minor > *{margin-top:6px}
 .keyname.minor .kmin{color:var(--rule-fg);font-weight:500}
-.keyname .notes{font:500 13px/1 var(--mono);color:var(--accent);letter-spacing:.1em;white-space:pre;font-variant-numeric:tabular-nums}
+.keyname .notes{display:inline-grid;grid-template-columns:repeat(7,2.1em);font:500 13px/1 var(--mono);color:var(--accent)}
+.keyname .notes span{text-align:left}
 .keyname.minor .notes{color:var(--rule-dim);font-size:13px}
 .sigline{grid-column:1 / -1}
 .sigline{font:600 11px/1 var(--mono);color:var(--rule-dim);letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;margin-top:6px}

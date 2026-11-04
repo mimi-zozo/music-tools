@@ -141,8 +141,9 @@ function updateReadout() {
   document.getElementById('ctKey').textContent = `${k.name} major`;
   const minorNotes = [5, 6, 0, 1, 2, 3, 4].map((i) => k.notes[i]);   // natural minor: same notes from degree 6
   document.getElementById('majNotes').textContent = k.notes.join('  ');
-  document.getElementById('majNotesBar').textContent = k.notes.join(' ');
-  document.getElementById('minNotesBar').textContent = minorNotes.join(' ');
+  const cells = (notes) => notes.map((n) => `<span>${n}</span>`).join('');
+  document.getElementById('majNotesBar').innerHTML = cells(k.notes);
+  document.getElementById('minNotesBar').innerHTML = cells(minorNotes);
   document.querySelectorAll('.sym').forEach((s) => (s.textContent = k.name + s.dataset.sym));
 }
 function setPos(p) {
