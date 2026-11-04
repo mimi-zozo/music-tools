@@ -62,10 +62,11 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 .keyname .notes{display:inline-grid;grid-template-columns:repeat(7,2.4em);font:500 14px/1 var(--mono);color:var(--accent)}
 .keyname .notes span{text-align:left;white-space:nowrap}
 .keyname .notes sup{font-size:.7em;line-height:0;vertical-align:.45em;margin-left:.08em;opacity:.85}
-.keyname.minor .notes{color:var(--rule-dim);font-size:13px}
+.keyname.minor .notes{color:var(--rule-dim)}
 .sigline{grid-column:1 / -1}
 .sigline{font:600 11px/1 var(--mono);color:var(--rule-dim);letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;margin-top:6px}
 .sigline .sig{color:var(--accent);font-size:13px;letter-spacing:0}
+.sigline .acc{color:var(--rule-fg);font-weight:500;text-transform:none;letter-spacing:.06em}
 .rulerwrap{display:flex;align-items:center;gap:6px;min-width:0}
 .arrow{flex:0 0 auto;width:34px;height:60px;border:0;border-radius:8px;background:rgba(255,255,255,.06);color:var(--rule-fg);
   font:500 22px/1 var(--display);cursor:pointer;transition:background .15s}
@@ -188,7 +189,7 @@ h2{font:700 15px/1.2 var(--display);margin:0;letter-spacing:.01em}
       <div class="readout">
         <div class="keyname"><span class="kmaj">A major</span><span class="notes" id="majNotesBar">A B C♯ D E F♯ G♯</span></div>
         <div class="keyname minor"><span class="kmin">F♯ minor</span><span class="notes" id="minNotesBar">F♯ G♯ A B C♯ D E</span></div>
-        <div class="sigline"><span>Key signature</span><span class="sig" id="ksig">3♯</span><span id="kspell">sharps</span></div>
+        <div class="sigline"><span>Key signature</span><span class="sig" id="ksig">3♯</span><span class="acc" id="kacc">F♯ C♯ G♯</span></div>
       </div>
       <div class="rulerwrap">
         <button class="arrow" data-step="-1" aria-label="Previous key (down a semitone)">‹</button>

@@ -128,12 +128,20 @@ function markOn() {
     for (const iv of r._spec.iv) cells[b + iv]?.classList.add('on');
   }
 }
+const SHARP_ORDER = ['F♯', 'C♯', 'G♯', 'D♯', 'A♯', 'E♯', 'B♯'];
+const FLAT_ORDER = ['B♭', 'E♭', 'A♭', 'D♭', 'G♭', 'C♭', 'F♭'];
+/** The accidentals in a key signature, in the order they are written on the stave. */
+function accidentals(k) {
+  const n = parseInt(k.sig, 10);
+  if (!n) return 'no sharps or flats';
+  return (k.flat ? FLAT_ORDER : SHARP_ORDER).slice(0, n).join(' ');
+}
 function updateReadout() {
   const k = KEYS[key];
   document.querySelectorAll('.kmaj').forEach((e) => (e.textContent = `${k.name} major`));
   document.querySelectorAll('.kmin').forEach((e) => (e.textContent = `${k.minor} minor`));
   document.getElementById('ksig').textContent = k.sig;
-  document.getElementById('kspell').textContent = k.flat ? 'flats' : 'sharps';
+  document.getElementById('kacc').textContent = accidentals(k);
   root.classList.toggle('flats', k.flat);
   document.getElementById('majRoot').textContent = k.name;
   document.getElementById('chRoot').textContent = k.name;
