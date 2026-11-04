@@ -54,12 +54,14 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 .keybar.bottom{position:static;margin-top:26px;box-shadow:none;padding-bottom:0}
 .keybar-in{background:var(--rule-bg);color:var(--rule-fg);border-radius:14px;padding:10px 12px 8px;display:grid;
   grid-template-columns:auto 1fr;gap:6px 18px;align-items:center}
-.readout{display:flex;flex-direction:column;gap:4px;min-width:0;padding-left:6px}
-.keyname{display:flex;align-items:baseline;gap:12px;font:700 clamp(20px,2.6vw,26px)/1.05 var(--display);letter-spacing:-.01em;white-space:nowrap}
-.keyname.minor{font-size:clamp(15px,2vw,18px);color:var(--rule-dim);margin-top:6px}
+.readout{display:grid;grid-template-columns:auto auto;column-gap:14px;row-gap:4px;align-items:baseline;justify-content:start;min-width:0;padding-left:6px}
+.keyname{display:contents;font:700 clamp(20px,2.6vw,26px)/1.05 var(--display);letter-spacing:-.01em;white-space:nowrap}
+.keyname.minor{font-size:clamp(15px,2vw,18px);color:var(--rule-dim)}
+.keyname.minor > *{margin-top:6px}
 .keyname.minor .kmin{color:var(--rule-fg);font-weight:500}
-.keyname .notes{font:500 13px/1 var(--mono);color:var(--accent);letter-spacing:.1em;white-space:pre}
-.keyname.minor .notes{color:var(--rule-dim);font-size:12px}
+.keyname .notes{font:500 13px/1 var(--mono);color:var(--accent);letter-spacing:.1em;white-space:pre;font-variant-numeric:tabular-nums}
+.keyname.minor .notes{color:var(--rule-dim);font-size:13px}
+.sigline{grid-column:1 / -1}
 .sigline{font:600 11px/1 var(--mono);color:var(--rule-dim);letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;margin-top:6px}
 .sigline .sig{color:var(--accent);font-size:13px;letter-spacing:0}
 .rulerwrap{display:flex;align-items:center;gap:6px;min-width:0}
