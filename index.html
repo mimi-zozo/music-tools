@@ -30,7 +30,7 @@ html{color-scheme:light dark}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
 .wrap{max-width:1040px;margin:0 auto}
-header{padding:56px 0 36px}
+header{padding:40px 0 36px}
 h1{font:700 clamp(34px,5vw,56px)/1 var(--display);margin:0;letter-spacing:-.025em;text-wrap:balance}
 h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
 .lede{margin:14px 0 0;color:var(--muted)}
@@ -48,8 +48,10 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 footer{margin-top:40px;font-size:13px;color:var(--muted)}
 footer a{color:var(--amber)}
 </style>
+<style>.sitenav{font:500 12px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap;padding-block:16px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}.sitenav a{color:inherit;opacity:.6;text-decoration:none}.sitenav a:hover,.sitenav a[aria-current]{opacity:1}.sitenav span{opacity:.35}</style>
 </head>
 <body>
+<nav class="sitenav" aria-label="Site"><a href="./" aria-current="page">Home</a><span>·</span><a href="./music-slide-rule/">Scotty West's slide rule</a><span>·</span><a href="./piano-chords/">Piano chord scales</a></nav>
 <div class="wrap">
   <header>
     <h1><small>Interactive</small>Music theory tools</h1>
