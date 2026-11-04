@@ -1,6 +1,6 @@
 # Music theory tools
 
-Two small interactive pages for hearing music theory rather than just reading it. Everything runs in the browser with the Web Audio API; there is no build step and no backend.
+Two small interactive pages, live at <https://mimi-zozo.github.io/music-tools/>. They are for hearing music theory rather than just reading it. Everything runs in the browser with the Web Audio API; there is no build step and no backend.
 
 **Scotty West's slide rule** (`music-slide-rule/`)
 A digital version of the paper musical slide rule. Drag the key ruler and every mode, scale and chord re-spells itself under fixed interval windows. Tap a scale to hear it climb, tap a chord to hear it ring. Covers the seven major modes, the seven harmonic-minor modes, pentatonics, melodic minor, whole-tone and diminished scales, and 23 chord types.
