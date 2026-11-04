@@ -64,7 +64,7 @@ export function tone(midi, t, dur, vel = 1) {
  *  root an octave down. Returns ms until the chord has died away. */
 export function playChord(midis, { dur = 1.3, strum = 0.012, bass = false } = {}) {
   const t = ensureAudio().currentTime + 0.03;
-  if (bass) tone(midis[0] - 12, t, dur + 0.2, 0.7);
+  if (bass) tone(midis[0] - 12, t, dur + 0.2, 0.35);
   midis.forEach((m, i) => tone(m, t + i * strum, dur, 0.8));
   return Math.round((dur + 0.4) * 1000);
 }

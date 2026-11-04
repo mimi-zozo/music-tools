@@ -17,8 +17,9 @@ const degree = (k, i) => k.t + MAJOR_STEPS[((i % 7) + 7) % 7] + 12 * Math.floor(
 const triad = (k, i) => [degree(k, i), degree(k, i + 2), degree(k, i + 4)];
 /** The scale up to and including the octave. */
 const scaleP = (k) => MAJOR_STEPS.map((o) => k.t + o).concat(k.t + 12);
-/** MIDI number of the keyboard's leftmost C: keys above F drop an octave so nothing gets shrill. */
-const base = () => (cur.t <= 5 ? 48 : 36);
+/** MIDI number of the keyboard's leftmost C. Every key's root lands in the C4–B4 octave,
+ *  so neighbouring keys sound neighbouring. */
+const base = () => 60;
 
 const soundChord = (p) => playChord(p.map((x) => base() + x), { dur: 2.2, strum: 0.035, bass: true });
 const soundScale = (p) => playScale(p.map((x) => base() + x), { step: 0.3, dur: 0.9, lastDur: 0.9 });
