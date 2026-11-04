@@ -42,10 +42,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .wrap{max-width:2200px;margin:0 auto;min-width:0}
 
 /* ---- header ---- */
-.top{padding:28px 0 14px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top{padding:28px 0 14px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
 h1{font:700 clamp(28px,4.4vw,44px)/1 var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
 h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
-.lede{margin:0;max-width:52ch;color:var(--muted);font-size:14px}
+.lede{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
 .lede kbd{font:600 11px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink)}
 
 /* ---- key bar (the slide) ---- */
@@ -174,7 +174,7 @@ h2{font:700 15px/1.2 var(--display);margin:0;letter-spacing:.01em}
 <div class="wrap">
   <header class="top">
     <h1><small>After Scotty West's 2015 paper slide rule</small>Musical Slide Rule</h1>
-    <p class="lede">Slide the key ruler, or drag any row sideways and watch the notes pass under the fixed intervals. Tap a scale to hear it climb; tap a chord to hear it ring. <kbd>←</kbd> <kbd>→</kbd> also change key.</p>
+    <p class="lede">Slide the key ruler, or drag any row sideways, and watch the notes pass under the fixed intervals. <kbd>←</kbd> <kbd>→</kbd> also change key.<br>Tap a scale to hear it climb; tap a chord to hear it ring.</p>
   </header>
 
   <div class="keybar">
