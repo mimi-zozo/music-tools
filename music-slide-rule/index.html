@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive musical slide rule: slide the key, hear every scale, mode and chord.">
+<title>Musical Slide Rule</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a sticky key ruler (the slide) above stacked "sheets"; every row is a window onto one
+   chromatic strip that slides under fixed interval markers. One --pos variable moves everything. */
+:root{
+  --bg:#E4E7EC; --surface:#F6F7F9; --ink:#14171C; --muted:#687080; --line:#C9CFD8;
+  --accent:#D6731A; --accent-soft:rgba(214,115,26,.16); --accent-glow:rgba(214,115,26,.55);
+  --nat-bg:#FFFFFF; --nat-fg:#14171C; --acc-bg:#1E2127; --acc-fg:#F4F5F7; --tile-line:#B9C0CB;
+  --rule-bg:#17191E; --rule-fg:#F2F3F5; --rule-dim:#8E95A3;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --cell:30px; --cellh:calc(var(--cell) * 1.65); --rowh:calc(var(--cellh) + 52px); --tick:clamp(54px,7vw,70px);
+  --pos:33; --stag:1; --ease:cubic-bezier(.2,.85,.25,1); --dur:.62s;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+    --accent:#F0A040; --accent-soft:rgba(240,160,64,.18); --accent-glow:rgba(240,160,64,.6);
+    --nat-bg:#E6E9EE; --nat-fg:#14171C; --acc-bg:#2A2F38; --acc-fg:#EEF0F4; --tile-line:#3A404B;
+    --rule-bg:#1C2027; --rule-fg:#F2F3F5; --rule-dim:#7D8594; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+  --accent:#F0A040; --accent-soft:rgba(240,160,64,.18); --accent-glow:rgba(240,160,64,.6);
+  --nat-bg:#E6E9EE; --nat-fg:#14171C; --acc-bg:#2A2F38; --acc-fg:#EEF0F4; --tile-line:#3A404B;
+  --rule-bg:#1C2027; --rule-fg:#F2F3F5; --rule-dim:#7D8594; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 48px;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:2200px;margin:0 auto;min-width:0}
+
+/* ---- header ---- */
+.top{padding:28px 0 14px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font:700 clamp(28px,4.4vw,44px)/1 var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.lede{margin:0;max-width:52ch;color:var(--muted);font-size:14px}
+.lede kbd{font:600 11px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--ink)}
+
+/* ---- key bar (the slide) ---- */
+.keybar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0 12px;
+  box-shadow:0 10px 18px -16px rgba(0,0,0,.5)}
+.keybar.bottom{position:static;margin-top:26px;box-shadow:none;padding-bottom:0}
+.keybar-in{background:var(--rule-bg);color:var(--rule-fg);border-radius:14px;padding:10px 12px 8px;display:grid;
+  grid-template-columns:auto 1fr;gap:6px 18px;align-items:center}
+.readout{display:flex;flex-direction:column;gap:2px;min-width:0;padding-left:6px}
+.keyname{font:700 clamp(22px,3.2vw,30px)/1.05 var(--display);letter-spacing:-.01em;white-space:nowrap}
+.keyname .rel{display:block;font:500 13px/1.3 var(--body);color:var(--rule-dim)}
+.keyname .rel b{color:var(--rule-fg);font-weight:500}
+.sigline{font:600 11px/1 var(--mono);color:var(--rule-dim);letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.sigline .sig{color:var(--accent);font-size:13px;letter-spacing:0}
+.rulerwrap{display:flex;align-items:center;gap:6px;min-width:0}
+.arrow{flex:0 0 auto;width:34px;height:60px;border:0;border-radius:8px;background:rgba(255,255,255,.06);color:var(--rule-fg);
+  font:500 22px/1 var(--display);cursor:pointer;transition:background .15s}
+.arrow:hover{background:rgba(255,255,255,.14)}
+.arrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ruler{position:relative;flex:1 1 auto;min-width:0;height:92px;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+.dragging .ruler,.dragging .track{cursor:grabbing}
+.rstrip{position:absolute;left:50%;top:0;height:100%;display:flex;
+  transform:translateX(calc((var(--pos) + .5) * var(--tick) * -1));transition:transform var(--dur) var(--ease);will-change:transform}
+.rcell{flex:0 0 var(--tick);width:var(--tick);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0 12px;position:relative}
+.rcell .maj{font:600 16px/1 var(--display)}
+.rcell .min{font:400 11px/1 var(--mono);color:var(--rule-dim)}
+.rcell .tk{width:2px;height:22px;background:var(--rule-dim);border-radius:1px;opacity:.7}
+.rcell::before,.rcell::after{content:"";position:absolute;top:50%;width:1px;height:8px;background:var(--rule-dim);opacity:.35;transform:translateY(-50%)}
+.rcell::before{left:25%}.rcell::after{left:75%}
+.cursor{position:absolute;left:50%;top:3px;bottom:3px;width:calc(var(--tick) + 4px);transform:translateX(-50%);border:2px solid var(--accent);
+  border-radius:9px;background:var(--accent-soft);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 16px var(--accent-soft)}
+.cursor::before,.cursor::after{content:"";position:absolute;left:50%;width:2px;height:7px;background:var(--accent);transform:translateX(-50%)}
+.cursor::before{top:-9px}.cursor::after{bottom:-9px}
+.rlab{position:absolute;left:8px;font:500 9px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--rule-dim);pointer-events:none}
+.rlab.t{top:8px}.rlab.b{bottom:7px}
+
+/* ---- sheets ---- */
+section{margin-top:26px}
+.sechead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:0 0 8px 2px}
+h2{font:700 15px/1.2 var(--display);margin:0;letter-spacing:.01em}
+.sechead .note{font:400 12px var(--mono);color:var(--muted)}
+.sechead .note b{color:var(--accent);font-weight:600}
+/* Two boxes on one scroll track. Both panels are grids of the same 48 chromatic columns with identical
+   padding, so column n is the same note in both: the harmonic block starts at column 21 (≡ 9, the
+   relative minor) and the minor-family chords at column 24 (≡ 0, the root). */
+.sheet{overflow-x:auto;min-width:0;display:flex;flex-direction:column;gap:18px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px 10px;width:calc(48 * var(--cell) + 32px);min-width:100%}
+.sheetwrap{display:flex;align-items:flex-start;gap:8px;min-width:0}
+.sheetwrap .sheet{flex:1 1 auto;min-width:0}
+.panel{--stag:0;display:grid;grid-template-columns:repeat(48,var(--cell));column-gap:0;row-gap:10px;align-items:start;justify-items:start}
+.panel.scales{grid-template-rows:repeat(7,var(--rowh)) 6px repeat(3,var(--rowh))}
+.panel.chords{grid-template-rows:repeat(9,var(--rowh))}
+.panel .row{grid-column:calc(var(--deg) + 1) / span var(--span)}
+.divider{height:1px;background:var(--line);align-self:center;width:100%}
+/* rotated labels sit outside the sheet, spanning the height of the scales panel */
+.side{flex:0 0 auto;width:28px;margin-top:76px;height:calc(10 * var(--rowh) + 96px);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.side span{writing-mode:vertical-rl;font:700 20px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:.5;white-space:nowrap}
+@media (max-width:900px){.side{display:none}}
+.side.left span{transform:rotate(180deg)}
+.gaplab{grid-column:25 / span 9;grid-row:1 / span 7;align-self:center;justify-self:center;writing-mode:vertical-rl;transform:rotate(180deg);
+  font:500 10px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:center;pointer-events:none;max-height:100%}
+.sechead.inner{margin:18px 0 10px}
+.sechead.inner:first-child{margin-top:0}
+.row{display:flex;flex-direction:column;gap:3px;cursor:pointer;border-radius:8px;outline:none;width:max-content}
+.rowhead{display:inline-flex;align-items:baseline;gap:.5em;margin-left:calc(var(--deg) * var(--cell) * var(--stag));font-size:12.5px;line-height:1.2;
+  padding:0 2px;white-space:nowrap}
+.rowhead .num{font:600 13px var(--mono);color:var(--accent);min-width:1.6em}
+.rowhead .name{font:600 15.5px var(--body);letter-spacing:.01em}
+.rowhead .sub{color:var(--muted);font-size:13px}
+.rowhead .sym{font:600 14px var(--mono);color:var(--accent)}
+.rowhead .play{display:inline-block;width:0;height:0;border:5px solid transparent;border-left:8px solid var(--muted);border-right:0;margin-left:2px;
+  transform:translateY(-1px);opacity:.5;transition:opacity .15s,border-color .15s}
+.row:hover .play,.row:focus-visible .play{opacity:1;border-left-color:var(--accent)}
+.track{position:relative;height:calc(var(--cellh) + 26px);overflow:hidden;margin-left:calc(var(--deg) * var(--cell) * var(--stag));
+  touch-action:pan-y;user-select:none;-webkit-user-select:none;border-radius:8px;cursor:grab}
+.row:focus-visible .track{outline:2px solid var(--accent);outline-offset:2px}
+.strip{position:absolute;left:0;top:0;height:var(--cellh);display:flex;will-change:transform;
+  transform:translateX(calc((var(--pos) + var(--shift)) * var(--cell) * -1));transition:transform var(--dur) var(--ease)}
+.noanim .strip,.noanim .rstrip{transition:none}
+.cell{flex:0 0 var(--cell);width:var(--cell);height:var(--cellh);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  border-radius:6px;border:2px solid transparent;background-clip:padding-box;box-shadow:inset 0 0 0 1px var(--tile-line);
+  opacity:.34;transform:scale(.84);transition:opacity .25s,transform .25s;font-variant-numeric:tabular-nums}
+.cell.nat{background:var(--nat-bg);color:var(--nat-fg)}
+.cell.acc{background:var(--acc-bg);color:var(--acc-fg);box-shadow:none}
+.cell b{font:600 calc(var(--cell) * .52)/1 var(--display)}
+.cell i{font:400 calc(var(--cell) * .34)/1 var(--mono);font-style:normal;opacity:.7}
+.cell.acc b{font-size:calc(var(--cell) * .44)}
+.flats .cell.acc{flex-direction:column-reverse}
+.flats .cell.acc b{font-size:calc(var(--cell) * .34);font-weight:400;font-family:var(--mono);opacity:.7}
+.flats .cell.acc i{font:600 calc(var(--cell) * .44)/1 var(--display);opacity:1}
+.cell.on{opacity:1;transform:none}
+.dragging .cell,.sliding .cell{opacity:.72;transform:scale(.94)}
+.mk{position:absolute;top:0;left:calc(var(--i) * var(--cell));width:var(--cell);height:var(--cellh);border:2px solid var(--accent);border-radius:8px;
+  pointer-events:none;box-shadow:inset 0 0 0 2px var(--accent-soft);transition:box-shadow .12s,background .12s}
+.mk .lab{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:9px;font:600 14px/1 var(--mono);color:var(--accent);white-space:nowrap;letter-spacing:-.02em}
+.mk.hit{background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft),0 0 16px var(--accent-glow)}
+.row.playing{outline:1.5px solid var(--accent);outline-offset:6px;border-radius:6px}
+.chords .cell{opacity:0;transform:scale(.8)}
+.chords .cell.on{opacity:1;transform:none}
+.dragging .chords .cell,.sliding .chords .cell{opacity:.5;transform:scale(.92)}
+.track::before{content:"";position:absolute;left:4px;right:4px;top:calc(var(--cellh) / 2 - 3px);height:6px;border-radius:3px;background:var(--line);opacity:.9}
+.chords .rowhead{font-size:14px}
+.ctitle{grid-column:13 / 25;grid-row:2 / span 3;align-self:center;justify-self:stretch;
+  text-align:center;font:700 24px/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-wrap:balance;pointer-events:none}
+.ctitle small{display:block;font:600 15px/1.5 var(--mono);letter-spacing:.12em;color:var(--accent);margin-top:10px;text-transform:none;white-space:pre;font-variant-numeric:tabular-nums}
+.hint{margin:18px 2px 0;font:400 12.5px var(--mono);color:var(--muted);max-width:70ch}
+.credit{margin:14px 2px 0;font-size:12px;color:var(--muted)}
+.credit a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){.strip,.rstrip,.cell{transition:none}}
+@media (max-width:640px){
+  .keybar-in{grid-template-columns:1fr}
+  .readout{flex-direction:row;align-items:baseline;gap:14px;padding-left:4px}
+  .keyname .rel{display:inline;margin-left:8px}
+  .arrow{display:none}
+  .sheet{padding:12px 10px 8px}
+}
+</style>
+<style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>.sitenav{font:500 12px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:16px 0;max-width:2200px;margin:0 auto}.sitenav a{color:inherit;opacity:.6;text-decoration:none}.sitenav a:hover,.sitenav a[aria-current]{opacity:1}.sitenav span{opacity:.35}</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><a href="../">Home</a><span>·</span><a href="../music-slide-rule/" aria-current="page">Scotty West's slide rule</a><span>·</span><a href="../piano-chords/">Piano chord scales</a></nav>
+
+
+<div class="wrap">
+  <header class="top">
+    <h1><small>After Scotty West's 2015 paper slide rule</small>Musical Slide Rule</h1>
+    <p class="lede">Slide the key ruler, or drag any row sideways and watch the notes pass under the fixed intervals. Tap a scale to hear it climb; tap a chord to hear it ring. <kbd>←</kbd> <kbd>→</kbd> also change key.</p>
+  </header>
+
+  <div class="keybar">
+    <div class="keybar-in">
+      <div class="readout">
+        <div class="keyname"><span class="kmaj">A major</span><span class="rel">relative minor <b class="kmin">F♯ minor</b></span></div>
+        <div class="sigline"><span>Key signature</span><span class="sig" id="ksig">3♯</span><span id="kspell">sharps</span></div>
+      </div>
+      <div class="rulerwrap">
+        <button class="arrow" data-step="-1" aria-label="Previous key (down a semitone)">‹</button>
+        <div class="ruler" aria-label="Key ruler. Drag to change key.">
+          <div class="rstrip"></div>
+          <div class="cursor"></div>
+          <span class="rlab t">major</span><span class="rlab b">relative minor</span>
+        </div>
+        <button class="arrow" data-step="1" aria-label="Next key (up a semitone)">›</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="sheetwrap">
+    <div class="side left"><span>Major diatonic modes</span></div>
+    <div class="sheet">
+      <div class="box">
+        <div class="sechead inner"><h2>Scales and modes</h2><span class="note">major modes on <b id="majRoot">A</b> · harmonic minor modes on the relative minor, <b id="hmRoot">F♯</b> · tap a row to hear it ascend</span></div>
+        <div class="panel scales" id="scales"></div>
+      </div>
+      <div class="box">
+        <div class="sechead inner"><h2>Chords and arpeggios</h2><span class="note">all on the root <b id="chRoot">A</b> · tap to hear the notes together</span></div>
+        <div class="panel chords" id="chords"><div class="ctitle"><span id="ctKey">A major</span><small id="majNotes"></small></div></div>
+      </div>
+    </div>
+    <div class="side right"><span>Harmonic minor modes</span></div>
+  </section>
+
+  <p class="hint">Light tiles are natural notes, dark tiles are accidentals, like a keyboard. The orange windows are the fixed intervals; the strip of notes slides beneath them, so a row never changes shape, only its spelling.</p>
+  <p class="credit">Original paper design by Scotty West, <a href="https://www.absolutelyunderstandguitar.com" target="_blank" rel="noopener">Absolutely Understand Guitar</a>.</p>
+</div>
+
+<script type="module" src="./sheet.js"></script>
+
+</body>
+</html>

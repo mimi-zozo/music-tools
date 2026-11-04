@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Every major key: its seven chords on a keyboard, the scale, relative minor and scale degrees, with sound.">
+<title>Major Key Chord Scales</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: one reading column; key picker in circle-of-fifths order, then chords, scale, relative minor, degree table */
+:root{
+  --bg:#F5F6F9; --surface:#FFFFFF; --fg:#151821; --muted:#5B6172; --line:#DDE0E8;
+  --root:#3442C2; --tone:#A9B4F7; --tone-ink:#1C2470; --root-ink:#FFFFFF;
+  --minor:#B4572E; --minor-soft:#F6DCCD;
+  --key-w:#FFFFFF; --key-b:#1B1D24; --key-edge:#9CA1AE;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101219; --surface:#181B24; --fg:#E8EAF0; --muted:#9AA0B1; --line:#2A2F3C;
+  --root:#7D8BFF; --tone:#3F4BA8; --tone-ink:#E6E9FF; --root-ink:#0D1030;
+  --minor:#F09A6E; --minor-soft:#3A2418;
+  --key-w:#E4E6EC; --key-b:#14161C; --key-edge:#6B7080; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101219; --surface:#181B24; --fg:#E8EAF0; --muted:#9AA0B1; --line:#2A2F3C;
+  --root:#7D8BFF; --tone:#3F4BA8; --tone-ink:#E6E9FF; --root-ink:#0D1030;
+  --minor:#F09A6E; --minor-soft:#3A2418;
+  --key-w:#E4E6EC; --key-b:#14161C; --key-edge:#6B7080; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body)}
+main{max-width:1440px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:40px}
+h1{font:700 clamp(2.2rem,6vw,3.4rem)/1.05 var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h2{font:500 1.4rem/1.2 var(--display);margin:0 0 4px}
+.lede{color:var(--muted);margin:10px 0 0;max-width:62ch}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:14px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.sub{color:var(--muted);font-size:.92rem;margin:0 0 14px}
+.picker{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.picker button{font:500 1rem var(--display);min-width:52px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.picker button small{font:400 .68rem var(--mono);color:var(--muted)}
+.picker button:hover{border-color:var(--root)}
+.picker button:focus-visible{outline:2px solid var(--root);outline-offset:2px}
+.picker button[aria-pressed="true"]{background:var(--root);border-color:var(--root);color:var(--root-ink)}
+.picker button[aria-pressed="true"] small{color:var(--root-ink);opacity:.8}
+.picker .rm{font:500 .78rem var(--mono);color:var(--minor);margin:2px 0 1px}
+.picker button[aria-pressed="true"] .rm{color:var(--root-ink);opacity:.9}
+.picklabel{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card header{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.rn{font:500 .8rem var(--mono);color:var(--root);margin-right:8px}
+.cn{font:500 1rem var(--display)}
+.notes{font:400 .82rem var(--mono);color:var(--muted);letter-spacing:.06em}
+svg{display:block;width:100%;height:auto}
+.big{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto}
+.big svg{min-width:520px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;font:500 .8rem var(--mono);color:var(--muted)}
+.steps span{padding:3px 8px;border:1px solid var(--line);border-radius:999px}
+.steps .h{border-color:var(--root);color:var(--root)}
+.minor{background:var(--minor-soft);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.minor h2{color:var(--minor)}
+.minor p{margin:0}
+.mrow{display:flex;flex-wrap:wrap;gap:6px}
+.mrow span{font:500 .85rem var(--mono);padding:4px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--line)}
+.mrow span b{font-weight:500;color:var(--minor);margin-right:6px}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
+th{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.deg{font:500 1rem var(--mono);color:var(--root);font-variant-numeric:tabular-nums}
+td.note{font:700 1.1rem var(--display)}
+td.mono{font-family:var(--mono);font-size:.88rem}
+tr.rel td{background:var(--minor-soft)}
+.play{align-self:flex-start;font:500 .8rem var(--mono);border:1px solid var(--line);background:var(--surface);color:var(--root);border-radius:6px;padding:4px 10px;cursor:pointer}
+.play:hover,.chip:hover{border-color:var(--root)}
+.play:focus-visible,.chip:focus-visible{outline:2px solid var(--root);outline-offset:2px}
+.card{cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--root)}
+.card.hit{border-color:var(--root);box-shadow:0 0 0 2px var(--root) inset}
+.chip{font:500 .85rem var(--mono);padding:4px 10px;border-radius:6px;background:var(--surface);border:1px solid var(--line);color:var(--fg);cursor:pointer}
+.chip b{font-weight:500;color:var(--minor);margin-right:6px}
+.chip.hv{border-style:dashed;border-color:var(--minor)}
+.scalebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.scalebar .steps{margin-top:0}
+</style>
+<style>.sitenav{font:500 12px/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-block:16px 0;max-width:2200px;margin:0 auto}.sitenav a{color:inherit;opacity:.6;text-decoration:none}.sitenav a:hover,.sitenav a[aria-current]{opacity:1}.sitenav span{opacity:.35}</style>
+<style>.sitenav{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1440px}main{padding-top:24px}</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><a href="../">Home</a><span>·</span><a href="../music-slide-rule/">Scotty West's slide rule</a><span>·</span><a href="../piano-chords/" aria-current="page">Piano chord scales</a></nav>
+<main>
+  <section>
+    <h1 id="title">F major</h1>
+    <p class="lede">Pick a key to see its seven chords, the scale on the keyboard, its relative minor, and what each scale degree is called.</p>
+    <div class="picklabel">Major keys in circle-of-fifths order, with relative minor</div>
+    <div class="picker" id="picker" role="group" aria-label="Choose a major key"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--root)"></span>Root</span>
+      <span><span class="sw" style="background:var(--tone)"></span>Chord or scale tone</span>
+      <span><span class="sw" style="background:var(--minor)"></span>Relative minor</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Chord scale</h2>
+    <p class="sub">Stack every other note of the scale on each degree. Tap a keyboard or Play to hear the chord.</p>
+    <div class="grid" id="chords"></div>
+  </section>
+
+  <section>
+    <h2>The scale</h2>
+    <p class="sub" id="scalesub"></p>
+    <div class="big" id="scale"></div>
+    <div class="scalebar">
+      <button type="button" class="play" id="play-scale">▶ Play scale</button>
+      <div class="steps" id="steps" aria-label="Step pattern"></div>
+    </div>
+  </section>
+
+  <section class="minor" id="minor"></section>
+
+  <section>
+    <h2>Scale degrees</h2>
+    <p class="sub">Hear the note's function, then name it in the key. The highlighted row is where the relative minor starts.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Degree</th><th>Note</th><th>Name</th><th>Chord</th><th>Function</th></tr></thead>
+        <tbody id="degrees"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="./page.js"></script>
+
+
+</body>
+</html>

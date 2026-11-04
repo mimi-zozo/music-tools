@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive music theory tools: a musical slide rule for scales, modes and chords, and major-key chord scales on the piano.">
+<title>Music Theory Tools</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+/* Layout: a short masthead, then one card per tool, each previewing its own idiom (a slide window, a keyboard) */
+:root{
+  --bg:#E4E7EC; --surface:#F6F7F9; --ink:#14171C; --muted:#687080; --line:#C9CFD8;
+  --amber:#D6731A; --amber-soft:rgba(214,115,26,.16);
+  --indigo:#3442C2; --indigo-soft:rgba(52,66,194,.14);
+  --nat:#FFFFFF; --acc:#1E2127;
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16);
+  --nat:#E6E9EE; --acc:#2A2F38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16);
+  --nat:#E6E9EE; --acc:#2A2F38; color-scheme:dark}
+*{box-sizing:border-box}
+html{color-scheme:light dark}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1040px;margin:0 auto}
+header{padding:56px 0 36px}
+h1{font:700 clamp(34px,5vw,56px)/1 var(--display);margin:0;letter-spacing:-.025em;text-wrap:balance}
+h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+.lede{margin:14px 0 0;max-width:56ch;color:var(--muted)}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.tool{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;
+  color:inherit;text-decoration:none;min-width:0;transition:border-color .15s,transform .15s}
+.tool:hover{border-color:var(--hue);transform:translateY(-2px)}
+.tool:focus-visible{outline:2px solid var(--hue);outline-offset:3px}
+.tool h2{font:700 24px/1.1 var(--display);margin:0;letter-spacing:-.01em}
+.tool p{margin:0;color:var(--muted);font-size:15px}
+.tool .go{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--hue);margin-top:auto}
+.preview{height:120px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview svg{display:block;max-width:100%;height:auto}
+.slide{--hue:var(--amber)}.piano{--hue:var(--indigo)}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+footer a{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><small>Interactive</small>Music theory tools</h1>
+    <p class="lede">Tap a scale to hear it climb, tap a chord to hear it ring. Everything runs in the browser.</p>
+  </header>
+
+  <div class="tools">
+    <a class="tool slide" href="./music-slide-rule/">
+      <div class="preview" aria-hidden="true">
+        <svg viewBox="0 0 300 80" width="300" height="80">
+          <rect x="6" y="10" width="288" height="8" rx="3" fill="var(--line)"/>
+          <g font-family="Bricolage Grotesque, sans-serif" font-size="14" font-weight="600" text-anchor="middle">
+            <rect x="8" y="24" width="28" height="40" rx="5" fill="var(--nat)" stroke="var(--amber)" stroke-width="2.5"/><text x="22" y="49" fill="#14171C">A</text>
+            <rect x="44" y="30" width="22" height="28" rx="4" fill="var(--acc)" opacity=".5"/>
+            <rect x="74" y="24" width="28" height="40" rx="5" fill="var(--nat)" stroke="var(--amber)" stroke-width="2.5"/><text x="88" y="49" fill="#14171C">B</text>
+            <rect x="110" y="30" width="22" height="28" rx="4" fill="var(--nat)" opacity=".35"/>
+            <rect x="140" y="24" width="28" height="40" rx="5" fill="var(--acc)" stroke="var(--amber)" stroke-width="2.5"/><text x="154" y="49" fill="#EEF0F4" font-size="12">C♯</text>
+            <rect x="176" y="24" width="28" height="40" rx="5" fill="var(--nat)" stroke="var(--amber)" stroke-width="2.5"/><text x="190" y="49" fill="#14171C">D</text>
+            <rect x="212" y="30" width="22" height="28" rx="4" fill="var(--acc)" opacity=".5"/>
+            <rect x="242" y="24" width="28" height="40" rx="5" fill="var(--nat)" stroke="var(--amber)" stroke-width="2.5"/><text x="256" y="49" fill="#14171C">E</text>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="var(--amber)" text-anchor="middle">
+            <text x="22" y="76">1</text><text x="88" y="76">2</text><text x="154" y="76">3</text><text x="190" y="76">4</text><text x="256" y="76">5</text>
+          </g>
+        </svg>
+      </div>
+      <h2>Scotty West's slide rule</h2>
+      <p>Slide the key and watch every mode, scale and chord re-spell itself under fixed interval windows. Major and harmonic-minor modes, pentatonics, symmetrical scales and 23 chord types, all playable.</p>
+      <span class="go">Open Scotty West's slide rule →</span>
+    </a>
+
+    <a class="tool piano" href="./piano-chords/">
+      <div class="preview" aria-hidden="true">
+        <svg viewBox="0 0 300 80" width="300" height="80">
+          <g stroke="var(--line)" stroke-width="1">
+            <rect x="4" y="6" width="41" height="68" rx="3" fill="var(--indigo)"/>
+            <rect x="46" y="6" width="41" height="68" rx="3" fill="var(--nat)"/>
+            <rect x="88" y="6" width="41" height="68" rx="3" fill="var(--indigo-soft)"/>
+            <rect x="130" y="6" width="41" height="68" rx="3" fill="var(--nat)"/>
+            <rect x="172" y="6" width="41" height="68" rx="3" fill="var(--indigo-soft)"/>
+            <rect x="214" y="6" width="41" height="68" rx="3" fill="var(--nat)"/>
+            <rect x="256" y="6" width="40" height="68" rx="3" fill="var(--nat)"/>
+          </g>
+          <g fill="var(--acc)">
+            <rect x="33" y="6" width="24" height="42" rx="2"/><rect x="75" y="6" width="24" height="42" rx="2"/>
+            <rect x="159" y="6" width="24" height="42" rx="2"/><rect x="201" y="6" width="24" height="42" rx="2"/><rect x="243" y="6" width="24" height="42" rx="2"/>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="12" font-weight="500" text-anchor="middle">
+            <text x="24" y="66" fill="#FFFFFF">C</text><text x="108" y="66" fill="var(--indigo)">E</text><text x="192" y="66" fill="var(--indigo)">G</text>
+          </g>
+        </svg>
+      </div>
+      <h2>Piano chord scales</h2>
+      <p>Pick a major key and see its seven diatonic chords on the keyboard, the scale with its step pattern, the relative minor, and what each scale degree is called and does.</p>
+      <span class="go">Open the chord scales →</span>
+    </a>
+  </div>
+
+  <footer>The slide rule is modelled on Scotty West's paper design at <a href="https://www.absolutelyunderstandguitar.com" target="_blank" rel="noopener">Absolutely Understand Guitar</a>.</footer>
+</div>
+</body>
+</html>
