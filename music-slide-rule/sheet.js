@@ -141,7 +141,7 @@ function updateReadout() {
   document.getElementById('ctKey').textContent = `${k.name} major`;
   const minorNotes = [5, 6, 0, 1, 2, 3, 4].map((i) => k.notes[i]);   // natural minor: same notes from degree 6
   document.getElementById('majNotes').textContent = k.notes.join('  ');
-  const cells = (notes) => notes.map((n) => `<span>${n}</span>`).join('');
+  const cells = (notes) => notes.map((n) => `<span>${n[0]}${n.length > 1 ? `<sup>${n.slice(1)}</sup>` : ''}</span>`).join('');
   document.getElementById('majNotesBar').innerHTML = cells(k.notes);
   document.getElementById('minNotesBar').innerHTML = cells(minorNotes);
   document.querySelectorAll('.sym').forEach((s) => (s.textContent = k.name + s.dataset.sym));
@@ -246,7 +246,8 @@ function flash(mark, delayMs, lengthMs) {
 function playRow(row) {
   const s = row._spec;
   clearFlashes();
-  const rootMidi = 48 + mod(key + s.shift, 12);   // root in the C3 octave
+  const pc = mod(key + s.shift, 12);
+  const rootMidi = pc >= 7 ? 48 + pc : 60 + pc;   // roots span G3 … F♯4: G–B sit in octave 3, C–F♯ in octave 4
   const midis = s.iv.map((iv) => rootMidi + iv);
   const marks = row.querySelectorAll('.mk');
   row.classList.add('playing');
