@@ -5,6 +5,20 @@
 
 let ctx = null;
 let master = null;
+const live = new Set();   // every voice still sounding: { env, oscs, stopAt }
+
+/** Fade out everything that is still playing, so a new tap never overlaps the last one. */
+export function stopAll(fade = 0.06) {
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  for (const v of live) {
+    v.env.gain.cancelScheduledValues(now);
+    v.env.gain.setValueAtTime(v.env.gain.value, now);
+    v.env.gain.linearRampToValueAtTime(0.0001, now + fade);
+    v.oscs.forEach((o) => { try { o.stop(now + fade + 0.01); } catch (_) { /* already stopped */ } });
+  }
+  live.clear();
+}
 
 export function ensureAudio() {
   if (!ctx) {
@@ -45,6 +59,8 @@ export function tone(midi, t, dur, vel = 1) {
   lp.connect(env);
   env.connect(master);
 
+  const voice = { env, oscs: [] };
+  live.add(voice);
   const partials = [[1, 'triangle', 1], [2, 'sine', 0.3], [3, 'sine', 0.12], [1, 'sawtooth', 0.06]];
   for (const [mult, type, amp] of partials) {
     const o = c.createOscillator();
@@ -57,12 +73,15 @@ export function tone(midi, t, dur, vel = 1) {
     g.connect(lp);
     o.start(t);
     o.stop(t + dur + 0.45);
+    voice.oscs.push(o);
   }
+  voice.oscs[0].onended = () => live.delete(voice);
 }
 
 /** Notes together. `strum` is the tiny offset between voices; `bass` adds the
  *  root an octave down. Returns ms until the chord has died away. */
 export function playChord(midis, { dur = 1.3, strum = 0.012, bass = false } = {}) {
+  stopAll();
   const t = ensureAudio().currentTime + 0.03;
   if (bass) tone(midis[0] - 12, t, dur + 0.2, 0.35);
   midis.forEach((m, i) => tone(m, t + i * strum, dur, 0.8));
@@ -71,6 +90,7 @@ export function playChord(midis, { dur = 1.3, strum = 0.012, bass = false } = {}
 
 /** Notes one after another. Returns the gap between notes and the total, in ms. */
 export function playScale(midis, { step = 0.2, dur = 0.3, lastDur = 0.75 } = {}) {
+  stopAll();
   const t = ensureAudio().currentTime + 0.03;
   midis.forEach((m, i) => tone(m, t + i * step, i === midis.length - 1 ? lastDur : dur, 0.9));
   return { step: step * 1000, total: Math.round((midis.length * step + lastDur + 0.4) * 1000) };
@@ -78,6 +98,7 @@ export function playScale(midis, { step = 0.2, dur = 0.3, lastDur = 0.75 } = {})
 
 /** Chords one after another, e.g. I–IV–V. */
 export function playProgression(chords, { step = 0.62, dur = 0.5, lastDur = 0.9 } = {}) {
+  stopAll();
   const t = ensureAudio().currentTime + 0.03;
   chords.forEach((ch, ci) => {
     const d = ci === chords.length - 1 ? lastDur : dur;
