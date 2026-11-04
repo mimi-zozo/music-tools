@@ -18,7 +18,7 @@
   --body:"IBM Plex Sans",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   --cell:30px; --cellh:calc(var(--cell) * 1.35); --rowh:calc(var(--cellh) + 52px); --tick:clamp(54px,7vw,70px);
-  --pos:33; --stag:1; --ease:cubic-bezier(.2,.85,.25,1); --dur:.62s;
+  --pos:24; --stag:1; --ease:cubic-bezier(.2,.85,.25,1); --dur:.62s;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -187,9 +187,9 @@ h2{font:700 15px/1.2 var(--display);margin:0;letter-spacing:.01em}
   <div class="keybar">
     <div class="keybar-in">
       <div class="readout">
-        <div class="keyname"><span class="kmaj">A major</span><span class="notes" id="majNotesBar">A B C♯ D E F♯ G♯</span></div>
-        <div class="keyname minor"><span class="kmin">F♯ minor</span><span class="notes" id="minNotesBar">F♯ G♯ A B C♯ D E</span></div>
-        <div class="sigline"><span>Key signature</span><span class="sig" id="ksig">3♯</span><span class="acc" id="kacc">F♯ C♯ G♯</span></div>
+        <div class="keyname"><span class="kmaj">C major</span><span class="notes" id="majNotesBar">C D E F G A B</span></div>
+        <div class="keyname minor"><span class="kmin">A minor</span><span class="notes" id="minNotesBar">A B C D E F G</span></div>
+        <div class="sigline"><span>Key signature</span><span class="sig" id="ksig">none</span><span class="acc" id="kacc">no sharps or flats</span></div>
       </div>
       <div class="rulerwrap">
         <button class="arrow" data-step="-1" aria-label="Previous key (down a semitone)">‹</button>

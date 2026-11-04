@@ -67,7 +67,7 @@ $('picker').addEventListener('click', (e) => {
 });
 
 function fromHash() {
-  render(keyById(location.hash.slice(1)) || keyById('f'));
+  render(keyById(location.hash.slice(1)) || keyById('c'));
 }
 window.addEventListener('hashchange', fromHash);
 

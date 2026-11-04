@@ -105,8 +105,8 @@ for (let k = 0; k < RULER_CELLS; k++) {
 // class. It is kept within [12, 36) at rest so every strip has cells on both
 // sides, and silently re-centred by an octave after each slide.
 
-let pos = 33;
-let key = 9;
+let pos = 24;
+let key = 0;
 let settleTimer = null;
 const timers = [];
 
