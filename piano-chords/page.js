@@ -23,13 +23,6 @@ const base = () => (cur.t <= 5 ? 48 : 36);
 const soundChord = (p) => playChord(p.map((x) => base() + x), { dur: 2.2, strum: 0.035, bass: true });
 const soundScale = (p) => playScale(p.map((x) => base() + x), { step: 0.3, dur: 0.9, lastDur: 0.9 });
 
-/** Raise a note name by a semitone (for the harmonic-minor V chord). */
-function sharpen(name) {
-  if (name.endsWith('♭')) return name.slice(0, -1);
-  if (name.endsWith('♯')) return name.slice(0, -1) + '𝄪';
-  return name + '♯';
-}
-
 /* ---------- rendering ---------- */
 
 function render(k) {
@@ -56,8 +49,8 @@ function render(k) {
     <h2>Relative minor: ${n[5]} minor</h2>
     <p>Same notes as ${n[0]} major, starting on degree 6. If phrases resolve to ${n[5]}, you are hearing ${n[5]} minor; if they settle on ${n[0]}, it is ${n[0]} major.</p>
     <div class="mrow">${mn.map((x) => `<span>${x}</span>`).join('')}<span>${mn[0]}</span></div>
-    <div class="mrow">${mn.map((x, i) => `<button type="button" class="chip" data-mi="${i}"><b>${MIN_RN[i]}</b>${x}${qualitySuffix(MIN_Q[i])}</button>`).join('')}<button type="button" class="chip hv" data-hv="1" title="Harmonic minor V: raised 7th"><b>V</b>${n[2]} <span style="color:var(--muted)">(${n[2]} ${sharpen(n[4])} ${n[6]})</span></button></div>
-    <p style="font-size:.88rem;color:var(--muted)">Tap a chord to hear it. The dashed V is the major version of v with the raised 7th, the chord that pulls hardest back to ${n[5]}m.</p>`;
+    <div class="mrow">${mn.map((x, i) => `<button type="button" class="chip" data-mi="${i}"><b>${MIN_RN[i]}</b>${x}${qualitySuffix(MIN_Q[i])}</button>`).join('')}</div>
+    <p style="font-size:.88rem;color:var(--muted)">Tap a chord to hear it.</p>`;
 
   $('degrees').innerHTML = DEGREES.map((d, i) =>
     `<tr class="${i === 5 ? 'rel' : ''}"><td class="deg">${i + 1}</td><td class="note">${n[i]}</td><td>${d[0]}</td><td class="mono">${MAJ_RN[i]} · ${n[i]}${qualitySuffix(MAJ_Q[i])}</td><td>${d[1]}</td></tr>`).join('');
@@ -89,11 +82,6 @@ $('scale').addEventListener('click', () => soundScale(scaleP(cur)));
 $('minor').addEventListener('click', (e) => {
   const b = e.target.closest('.chip');
   if (!b) return;
-  if (b.dataset.hv) {
-    const r = degree(cur, 9) - 12;       // V of the relative minor, in the lower octave
-    soundChord([r, r + 4, r + 7]);
-    return;
-  }
   soundChord(triad(cur, +b.dataset.mi + 5).map((x) => x - 12));
 });
 
