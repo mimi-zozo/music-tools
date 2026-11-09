@@ -39,8 +39,9 @@ export function ensureAudio() {
 export const midiToHz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
 /** One note: triangle fundamental, two sine partials and a whisper of saw,
- *  through a lowpass that closes as the note decays. */
-export function tone(midi, t, dur, vel = 1) {
+ *  through a lowpass that closes as the note decays. `release` is the tail after
+ *  `dur`; keep it short for staccato. */
+export function tone(midi, t, dur, vel = 1, release = 0.4) {
   const c = ensureAudio();
   const f = midiToHz(midi);
 
@@ -49,13 +50,13 @@ export function tone(midi, t, dur, vel = 1) {
   env.gain.linearRampToValueAtTime(0.9 * vel, t + 0.012);
   env.gain.exponentialRampToValueAtTime(0.5 * vel, t + 0.22);
   env.gain.setValueAtTime(0.5 * vel, t + dur);
-  env.gain.exponentialRampToValueAtTime(0.0008, t + dur + 0.4);
+  env.gain.exponentialRampToValueAtTime(0.0008, t + dur + release);
 
   const lp = c.createBiquadFilter();
   lp.type = 'lowpass';
   lp.Q.value = 0.6;
   lp.frequency.setValueAtTime(Math.min(9000, f * 8), t);
-  lp.frequency.exponentialRampToValueAtTime(Math.max(600, f * 2.2), t + dur + 0.3);
+  lp.frequency.exponentialRampToValueAtTime(Math.max(600, f * 2.2), t + dur + Math.min(0.3, release));
   lp.connect(env);
   env.connect(master);
 
@@ -72,7 +73,7 @@ export function tone(midi, t, dur, vel = 1) {
     o.connect(g);
     g.connect(lp);
     o.start(t);
-    o.stop(t + dur + 0.45);
+    o.stop(t + dur + release + 0.05);
     voice.oscs.push(o);
   }
   voice.oscs[0].onended = () => live.delete(voice);
@@ -88,12 +89,13 @@ export function playChord(midis, { dur = 1.3, strum = 0.012, bass = false } = {}
   return Math.round((dur + 0.4) * 1000);
 }
 
-/** Notes one after another. Returns the gap between notes and the total, in ms. */
-export function playScale(midis, { step = 0.2, dur = 0.3, lastDur = 0.75 } = {}) {
+/** Notes one after another. `release` shortens each note's tail (staccato when small).
+ *  Returns the gap between notes and the total, in ms. */
+export function playScale(midis, { step = 0.2, dur = 0.3, lastDur = 0.75, release = 0.4 } = {}) {
   stopAll();
   const t = ensureAudio().currentTime + 0.03;
-  midis.forEach((m, i) => tone(m, t + i * step, i === midis.length - 1 ? lastDur : dur, 0.9));
-  return { step: step * 1000, total: Math.round((midis.length * step + lastDur + 0.4) * 1000) };
+  midis.forEach((m, i) => tone(m, t + i * step, i === midis.length - 1 ? lastDur : dur, 0.9, release));
+  return { step: step * 1000, total: Math.round((midis.length * step + lastDur + release) * 1000) };
 }
 
 /** Chords one after another, e.g. I–IV–V. */

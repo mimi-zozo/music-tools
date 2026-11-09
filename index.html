@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Interactive music theory tools: a musical slide rule for scales, modes and chords, and major-key chord scales on the piano.">
+<meta name="description" content="Interactive music theory tools: a musical slide rule for scales, modes and chords, major-key chord scales on the piano, two-point interval shapes on the guitar neck, intervals by ear with song openers, and an 18-minute scale practice routine with a timer.">
 <title>Music Theory Tools</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
 <style>
@@ -12,6 +12,7 @@
   --bg:#E4E7EC; --surface:#F6F7F9; --ink:#14171C; --muted:#687080; --line:#C9CFD8;
   --amber:#D6731A; --amber-soft:rgba(214,115,26,.16);
   --indigo:#3442C2; --indigo-soft:rgba(52,66,194,.14);
+  --teal:#1E8A6E; --rose:#B8407A;
   --nat:#FFFFFF; --acc:#1E2127;
   --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans",system-ui,sans-serif;
@@ -19,22 +20,23 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
-  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16);
+  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16); --teal:#3FC9A3; --rose:#F27AB3;
   --nat:#E6E9EE; --acc:#2A2F38; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
-  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16);
+  --amber:#F0A040; --amber-soft:rgba(240,160,64,.18); --indigo:#7D8BFF; --indigo-soft:rgba(125,139,255,.16); --teal:#3FC9A3; --rose:#F27AB3;
   --nat:#E6E9EE; --acc:#2A2F38; color-scheme:dark}
 *{box-sizing:border-box}
 html{color-scheme:light dark}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
-.wrap{max-width:1040px;margin:0 auto}
+.wrap{max-width:1440px;margin:0 auto;min-width:0}
 header{padding:40px 0 36px}
 h1{font:700 clamp(34px,5vw,56px)/1 var(--display);margin:0;letter-spacing:-.025em;text-wrap:balance}
 h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
 .lede{margin:14px 0 0;color:var(--muted)}
-.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:640px){.tools{grid-template-columns:1fr}}
 .tool{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;
   color:inherit;text-decoration:none;min-width:0;transition:border-color .15s,transform .15s}
 .tool:hover{border-color:var(--hue);transform:translateY(-2px)}
@@ -44,18 +46,16 @@ h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-s
 .tool .go{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--hue);margin-top:auto}
 .preview{height:120px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .preview svg{display:block;max-width:100%;height:auto}
-.slide{--hue:var(--amber)}.piano{--hue:var(--indigo)}
-footer{margin-top:40px;font-size:13px;color:var(--muted)}
-footer a{color:var(--amber)}
+.slide{--hue:var(--amber)}.piano{--hue:var(--indigo)}.practice{--hue:var(--amber)}.intervals{--hue:var(--teal)}.ear{--hue:var(--rose)}
 </style>
 <style>html{scrollbar-gutter:stable}.sitenav{box-sizing:border-box;width:100%;height:48px;margin:0;padding:0 16px;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;font:500 12px/1 "IBM Plex Mono",ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}.sitenav a{color:inherit;opacity:.6;text-decoration:none;white-space:nowrap}.sitenav a:hover,.sitenav a[aria-current]{opacity:1}.sitenav span{opacity:.35}</style>
 </head>
 <body>
-<nav class="sitenav" aria-label="Site"><a href="./" aria-current="page">Home</a><span>·</span><a href="./music-slide-rule/">Scotty West's slide rule</a><span>·</span><a href="./piano-chords/">Piano chord scales</a></nav>
+<nav class="sitenav" aria-label="Site"><a href="./" aria-current="page">Home</a><span>·</span><a href="./music-slide-rule/">Scotty West's slide rule</a><span>·</span><a href="./piano-chords/">Piano chord scales</a><span>·</span><a href="./guitar-intervals/">Interval shapes</a><span>·</span><a href="./interval-familiarization/">Intervals by ear</a><span>·</span><a href="./practice-routine/">18-minute practice</a></nav>
 <div class="wrap">
   <header>
     <h1><small>Interactive</small>Music theory tools</h1>
-    <p class="lede">Tap a scale to hear it climb, tap a chord to hear it ring. Everything runs in the browser.</p>
+    <p class="lede">Tap a scale to hear it climb, tap a chord to hear it ring, then put a timer on practising it. Everything runs in the browser.</p>
   </header>
 
   <div class="tools">
@@ -108,9 +108,54 @@ footer a{color:var(--amber)}
       <p>Pick a major key and see its seven diatonic chords on the keyboard, the scale with its step pattern, the relative minor, and what each scale degree is called and does.</p>
       <span class="go">Open the chord scales →</span>
     </a>
+    <a class="tool intervals" href="./guitar-intervals/">
+      <div class="preview" aria-hidden="true">
+        <svg viewBox="0 0 300 80" width="300" height="80">
+          <rect x="30" y="8" width="240" height="64" rx="2" fill="var(--nat)"/>
+          <g stroke="var(--line)" stroke-width="2"><line x1="30" y1="8" x2="30" y2="72"/><line x1="78" y1="8" x2="78" y2="72"/><line x1="126" y1="8" x2="126" y2="72"/><line x1="174" y1="8" x2="174" y2="72"/><line x1="222" y1="8" x2="222" y2="72"/><line x1="270" y1="8" x2="270" y2="72"/></g>
+          <g stroke="var(--acc)"><line x1="30" y1="14" x2="270" y2="14" stroke-width=".8"/><line x1="30" y1="25" x2="270" y2="25" stroke-width="1"/><line x1="30" y1="36" x2="270" y2="36" stroke-width="1.2"/><line x1="30" y1="47" x2="270" y2="47" stroke-width="1.4"/><line x1="30" y1="58" x2="270" y2="58" stroke-width="1.6"/><line x1="30" y1="69" x2="270" y2="69" stroke-width="1.8"/></g>
+          <circle cx="102" cy="41.5" r="4" fill="var(--line)"/><circle cx="198" cy="41.5" r="4" fill="var(--line)"/>
+          <circle cx="102" cy="47" r="9" fill="#3478F6"/><text x="102" y="50.5" font-family="Bricolage Grotesque, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">R</text>
+          <circle cx="150" cy="36" r="9" fill="var(--acc)"/><text x="150" y="39.5" font-family="Bricolage Grotesque, sans-serif" font-size="10" font-weight="700" fill="#EEF0F4" text-anchor="middle">3</text>
+        </svg>
+      </div>
+      <h2>Interval shapes</h2>
+      <p>Every two-point intervallic function shape on the neck, drawn horizontally and playable: the 48 main shapes, each function orbiting one root, and the optional extras. Tap a shape to hear root then interval.</p>
+      <span class="go">Open the interval shapes →</span>
+    </a>
+    <a class="tool ear" href="./interval-familiarization/">
+      <div class="preview" aria-hidden="true">
+        <svg viewBox="0 0 300 80" width="300" height="80">
+          <g font-family="Bricolage Grotesque, sans-serif" font-weight="700" font-size="22" fill="var(--ink)"><text x="24" y="50">C</text><text x="112" y="50">G</text></g>
+          <path d="M48 42 Q 78 10 108 42" fill="none" stroke="var(--rose)" stroke-width="3" stroke-linecap="round"/>
+          <text x="78" y="22" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="var(--rose)" text-anchor="middle">P5</text>
+          <g fill="var(--line)"><rect x="160" y="44" width="8" height="22" rx="2"/><rect x="172" y="44" width="8" height="22" rx="2"/><rect x="184" y="30" width="8" height="36" rx="2"/><rect x="196" y="30" width="8" height="36" rx="2"/><rect x="208" y="26" width="8" height="40" rx="2"/><rect x="220" y="26" width="8" height="40" rx="2"/><rect x="232" y="30" width="14" height="36" rx="2"/></g>
+          <g fill="var(--rose)"><rect x="160" y="44" width="8" height="22" rx="2"/><rect x="172" y="44" width="8" height="22" rx="2"/><rect x="184" y="30" width="8" height="36" rx="2"/></g>
+        </svg>
+      </div>
+      <h2>Intervals by ear</h2>
+      <p>Every ascending interval inside an octave, played from C, with the opening notes of songs that start with that leap so the sound sticks.</p>
+      <span class="go">Open intervals by ear →</span>
+    </a>
+    <a class="tool practice" href="./practice-routine/">
+      <div class="preview" aria-hidden="true">
+        <svg viewBox="0 0 300 80" width="300" height="80">
+          <text x="64" y="52" font-family="IBM Plex Mono, monospace" font-size="40" font-weight="600" fill="var(--amber)" text-anchor="middle" letter-spacing="-1">18:00</text>
+          <g font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600" fill="var(--muted)" letter-spacing="1.2">
+            <text x="144" y="31">PRACTISE</text><text x="144" y="67">BREAK</text>
+          </g>
+          <rect x="212" y="24" width="82" height="8" rx="3" fill="var(--line)"/><rect x="212" y="24" width="58" height="8" rx="3" fill="var(--amber)"/>
+          <rect x="212" y="60" width="82" height="8" rx="3" fill="var(--line)"/><rect x="212" y="60" width="22" height="8" rx="3" fill="var(--amber)" opacity=".45"/>
+          <g fill="var(--amber)"><rect x="212" y="38" width="8" height="4" rx="1"/><rect x="223" y="38" width="8" height="4" rx="1"/><rect x="234" y="38" width="8" height="4" rx="1"/><rect x="245" y="38" width="8" height="4" rx="1"/><rect x="256" y="38" width="8" height="4" rx="1"/></g>
+          <g fill="var(--line)"><rect x="267" y="38" width="8" height="4" rx="1"/><rect x="278" y="38" width="8" height="4" rx="1"/><rect x="289" y="38" width="5" height="4" rx="1"/></g>
+        </svg>
+      </div>
+      <h2>18-minute practice</h2>
+      <p>Frank Dawson's method for learning scales: one pattern a day, 18 minutes on the clock, a 5-minute break, then every pattern you know for 21 days. Eight ways to fill the block, and a timer that runs it.</p>
+      <span class="go">Open the practice routine →</span>
+    </a>
   </div>
 
-  <footer>The slide rule is modelled on Scotty West's paper design at <a href="https://www.absolutelyunderstandguitar.com" target="_blank" rel="noopener">Absolutely Understand Guitar</a>.</footer>
 </div>
 </body>
 </html>

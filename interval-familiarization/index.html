@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Hear every ascending interval inside an octave, then the opening notes of songs that start with it.">
+<title>Intervals by Ear</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: twelve interval cards in a grid, each with one big "hear it" button and three song openers below it. */
+:root{
+  --bg:#E4E7EC; --surface:#F6F7F9; --ink:#14171C; --muted:#687080; --line:#C9CFD8;
+  --accent:#B8407A; --accent-ink:#FFFFFF; --accent-soft:rgba(184,64,122,.14);
+  --major:#B07A00;
+  --rule-bg:#17191E; --rule-fg:#F2F3F5; --rule-dim:#8E95A3; --rule-line:rgba(255,255,255,.14);
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+  --accent:#F27AB3; --accent-ink:#2A0C1B; --accent-soft:rgba(242,122,179,.16); --major:#F2C14E;
+  --rule-bg:#1C2027; --rule-fg:#F2F3F5; --rule-dim:#7D8594; --rule-line:rgba(255,255,255,.12); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1114; --surface:#171A20; --ink:#ECEEF2; --muted:#8B93A3; --line:#2A2F38;
+  --accent:#F27AB3; --accent-ink:#2A0C1B; --accent-soft:rgba(242,122,179,.16); --major:#F2C14E;
+  --rule-bg:#1C2027; --rule-fg:#F2F3F5; --rule-dim:#7D8594; --rule-line:rgba(255,255,255,.12); color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1440px;margin:0 auto;min-width:0}
+header{padding:40px 0 14px}
+h1{font:700 clamp(34px,5vw,56px)/1 var(--display);margin:0;letter-spacing:-.025em;text-wrap:balance}
+h1 small{display:block;font:500 12px/1.4 var(--mono);color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px}
+
+/* sticky root bar, like the slide rule's key bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.rootbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:8px 0 14px;box-shadow:0 10px 18px -16px rgba(0,0,0,.5)}
+.rootbar-in{background:var(--rule-bg);color:var(--rule-fg);border-radius:16px;padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.picklabel{font:500 13px/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--rule-dim);white-space:nowrap}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.picker button{font:700 22px var(--display);min-width:62px;padding:9px 10px;border-radius:10px;border:1px solid var(--rule-line);background:transparent;color:var(--rule-fg);cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.picker button small{font:400 12px var(--mono);color:var(--rule-dim);margin-top:2px}
+.picker button:hover{border-color:var(--accent)}
+.picker button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.picker button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.picker button[aria-pressed="true"] small{color:var(--accent-ink);opacity:.8}
+@media (max-width:560px){.picker button{font-size:18px;min-width:48px;padding:7px 6px}.picker button small{font-size:10px}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;align-items:stretch}
+.iv{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px 16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.iv h2{font:700 24px/1.1 var(--display);margin:0;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.iv h2 small{font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.iv.major h2{color:var(--major)}
+.iv.major h2 small{color:var(--major);opacity:.85}
+.hear{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;
+  font:700 18px var(--display);padding:14px 16px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.hear .n{font:500 14px var(--mono);opacity:.9;white-space:nowrap}
+.hear:hover{filter:brightness(1.08)}
+.hear:focus-visible,.ex:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hear.playing{box-shadow:0 0 0 3px var(--accent-soft)}
+.exs{display:flex;flex-direction:column;gap:8px}
+.ex{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit;font:inherit;cursor:pointer;min-width:0}
+.ex:hover{border-color:var(--accent)}
+.ex.playing{border-color:var(--accent);background:var(--accent-soft)}
+.ex .pl{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px}
+.ex .t{font:500 15px/1.25 var(--body);min-width:0}
+.ex .t span{display:block;font:400 12px/1.4 var(--body);color:var(--muted)}
+.ex .d{display:flex;gap:3px;align-items:flex-end;height:26px}
+.ex .d i{display:block;width:5px;border-radius:2px;background:var(--line);transition:background .1s}
+.ex .d i.on{background:var(--accent)}
+.none{margin:0;font-size:14px;color:var(--muted);padding:6px 2px}
+.also{margin-top:auto;padding-top:4px}
+.alsolab{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.also ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.also li{border-top:1px solid var(--line)}
+.also a{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:6px 2px;color:var(--ink);text-decoration:none;font-size:14px;line-height:1.35}
+.also a span{flex:1;min-width:0}
+.also a b{font:500 13px var(--mono);color:var(--accent)}
+.also a:hover span{text-decoration:underline}
+.also a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.ex .d i{transition:none}}
+</style>
+<style>html{scrollbar-gutter:stable}.sitenav{box-sizing:border-box;width:100%;height:48px;margin:0;padding:0 16px;display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;font:500 12px/1 "IBM Plex Mono",ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase}.sitenav a{color:inherit;opacity:.6;text-decoration:none;white-space:nowrap}.sitenav a:hover,.sitenav a[aria-current]{opacity:1}.sitenav span{opacity:.35}</style>
+</head>
+<body>
+<nav class="sitenav" aria-label="Site"><a href="../">Home</a><span>·</span><a href="../music-slide-rule/">Scotty West's slide rule</a><span>·</span><a href="../piano-chords/">Piano chord scales</a><span>·</span><a href="../guitar-intervals/">Interval shapes</a><span>·</span><a href="../interval-familiarization/" aria-current="page">Intervals by ear</a><span>·</span><a href="../practice-routine/">18-minute practice</a></nav>
+<div class="wrap">
+  <header>
+    <h1><small>Ascending, within one octave</small>Intervals by ear</h1>
+  </header>
+  <div class="rootbar">
+    <div class="rootbar-in">
+      <span class="picklabel">Root</span>
+      <div class="picker" id="picker" role="group" aria-label="Choose the root note"></div>
+    </div>
+  </div>
+  <main class="grid" id="grid"></main>
+  <footer>Playable openers are public-domain or traditional tunes, played as their first few notes with their rhythm. Recordings still in copyright are named under each card rather than transcribed. Song list after EarMaster’s interval song chart.</footer>
+</div>
+<script type="module" src="./page.js"></script>
+</body>
+</html>
