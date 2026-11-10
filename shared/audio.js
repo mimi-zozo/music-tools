@@ -23,7 +23,7 @@ export function stopAll(fade = 0.06) {
 export function ensureAudio() {
   if (!ctx) {
     const AC = window.AudioContext || window.webkitAudioContext;
-    ctx = new AC();
+    ctx = new AC({ latencyHint: 'interactive' });
     master = ctx.createGain();
     master.gain.value = 0.22;
     const comp = ctx.createDynamicsCompressor();
@@ -35,6 +35,13 @@ export function ensureAudio() {
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
 }
+
+// Warm up as early as the browser allows. The context is built at load (it sits
+// suspended until a user gesture) and resumed on the first pointer-down or key,
+// which fires before the click that plays the first note, so that note is on time.
+try { ensureAudio(); } catch (_) { /* created on first tap instead */ }
+const warm = () => { try { ensureAudio(); } catch (_) { /* ignore */ } };
+['pointerdown', 'keydown', 'touchstart'].forEach((ev) => window.addEventListener(ev, warm, { passive: true }));
 
 export const midiToHz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
