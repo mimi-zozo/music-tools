@@ -22,7 +22,7 @@ const scaleP = (k) => MAJOR_STEPS.map((o) => k.t + o).concat(k.t + 12);
 const base = () => 60;
 
 const soundChord = (p) => playChord(p.map((x) => base() + x), { dur: 2.2, strum: 0.035, bass: true });
-const soundScale = (p) => playScale(p.map((x) => base() + x), { step: 0.3, dur: 0.14, lastDur: 0.5, release: 0.08 });
+const soundScale = (p) => playScale(p.map((x) => base() + x), { step: 0.3, dur: 0.9, lastDur: 0.9 });
 
 /* ---------- rendering ---------- */
 
